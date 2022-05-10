@@ -14,6 +14,9 @@ class User(db.Model):
     name = db.column(db.string, unique = True)
 
 
+    def __init__(self, name) -> None:
+        self.name = name  #constructor
+
 # from . import db 
 
 # class User(db.Model):
