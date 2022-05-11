@@ -1,7 +1,8 @@
 import email
-from flask import render_template as render, redirect,url_for
+from flask import render_template as render, redirect,url_for, flash, request
+from flask_login import login_user
 from ..models import User
-from .forms import RegistrationForm
+from .forms import LoginForm,RegistrationForm
 from .. import db
 from flask_login import login_required
 from .blueprint import main_blueprint as main
@@ -11,9 +12,17 @@ def index():
     return render('index.html')
 
 @main.rote('/login', methods=['GET','POST'])
-@login_required
-def new_review(id):
-    pass
+def login():
+    login_form = LoginForm()
+    if login_form.validate_on_submit():
+        user = User.query.filter_by(email = login_form.email.data).first()
+        if user is not None and user.verify_email(login_form.email.data):
+            login_user(user,login_form.remember.data)
+            return redirect(request.args.get('next') or url_for('main.index'))
+        flash('Invalid username or password')
+
+    title = "Impress through Pitches"
+    return render('main/login.html',login_form = login_form,title = title)
 
 @main.route('/register',methods=["GET","POST"])
 def register():
