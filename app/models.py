@@ -1,5 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import PrimaryKeyConstraint
+
+# from app.main.views import index
 from . import db 
 from flask_login import UserMixin
 from . import login_manager
@@ -10,9 +12,10 @@ def load_user(user_id):
 
 class User(UserMixin,db.Model):
     __tablename__ = 'users'
-    id = db.column(db.Integer, primary_key=True)
-    username = db.column(db.string(300))
-    email = db.column(db.string(300), unique=True)
+    id = db.column(db.Integer, primary_key= True)
+    username = db.column(db.string(300),index= True)
+    email = db.column(db.string(300), unique=True, index=True)
+    profile_pic_path = db.columb(db.string())
 
     def __repr__(self): 
        return f'User Name{self.username}'

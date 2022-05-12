@@ -1,0 +1,9 @@
+{% macro displayPitches(category_list) %}
+
+    {% for pitches in category_list %}
+    <a href="/pitches/{{category.id}}">
+    <li class="list-group-item list-group-item-info ">{{category.name}}
+    </li></a>
+    {% endfor %}
+
+{% endmacro %}
