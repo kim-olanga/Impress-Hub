@@ -2,7 +2,7 @@ from flask import Flask
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from flask_bootstrap import Bootstrap
-# from flask_mail import Mail
+from flask_mail import Mail
 from config import config_options
 # from flask_migrate import Migrate
 # from .main import main_blueprint 
@@ -12,7 +12,7 @@ app = Flask(__name__)
 db = SQLAlchemy()
 login_manager = LoginManager()
 bootstrap = Bootstrap()
-#mail = Mail(app)
+mail = Mail(app)
 # migrate = Migrate()
 login_manager.login_view = 'auth.login'
 login_manager.session_protection = 'strong'
