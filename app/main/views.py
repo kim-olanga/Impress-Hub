@@ -1,127 +1,103 @@
-from flask import render_template, redirect, url_for
-from flask_login import login_required, current_user
+from flask import render_template,request,redirect,url_for, abort, flash
 
+from app.auth.views import login
 from . import main
-from .forms import PostForm, CommentForm, UpdateProfile
-from ..models import Post, Comment, User, Upvote,Downvote
+from ..models import User, Pitch,Comment,Upvotes,Downvotes
+from .forms import UpdateProfile,CommentForm, PitchesForm
+from .. import db
+# we want to access the login functionality for some features eg voting and making a pitch
+from flask_login import login_required,current_user
 
 
+# Views
 @main.route('/')
 def index():
-    posts = Post.query.all()
-    product = Post.query.filter_by(category='product').all()
-    idea = Post.query.filter_by(category='idea').all()
-    business = Post.query.filter_by(category='Business').all()
-    return render_template('index.html', business=business, product=product, idea=idea, posts=posts)
+    
+    all_pitches = Pitch.query.all()
+    interviews = Pitch.query.filter_by(category="Interview-Pitch").order_by(Pitch.Additiontime.desc()).all()
+    products = Pitch.query.filter_by(category="Product-Pitch").order_by(Pitch.Additiontime.desc()).all()
+    promotions = Pitch.query.filter_by(category="Promotion-Pitch").order_by(Pitch.Additiontime.desc()).all()
+    business = Pitch.query.filter_by(category="Business-Pitch").order_by(Pitch.Additiontime.desc()).all()
+    pickUp = Pitch.query.filter_by(category="'Pick-up").order_by(Pitch.Additiontime.desc()).all()
+    sales = Pitch.query.filter_by(category="'Pick-up").order_by(Pitch.Additiontime.desc()).all()
+      
+    title = "pitch & pitch"
+    
+    return render_template('index.html', title=title, all_pitches = all_pitches, interviews=interviews, products=products, promotions=promotions, business=business, pickUp = pickUp, sales=sales)
 
-@main.route('/posts')
-@login_required
-def posts():
-    posts = Post.query.all()
-    likes = Upvote.query.all()
-    user = current_user
-    return render_template('pitch_display.html', posts=posts, likes=likes, user=user)
 
-@main.route('/new_post', methods=['GET', 'POST'])
+@main.route('/create_new', methods =['POST','GET'])
 @login_required
-def new_post():
-    form = PostForm()
+def new_pitch():
+    form = PitchesForm()
     if form.validate_on_submit():
-        title = form.title.data
-        post = form.post.data
+        name = form.name.data
+        pitchcontent = form.content.data
         category = form.category.data
-        user_id = current_user._get_current_object().id
-        post_obj = Post(post=post, title=title, category=category, user_id=user_id)
-        post_obj.save()
+        user_id = current_user
+        new_pitch_object = Pitch( name = name, pitchcontent=pitchcontent,user_id=current_user._get_current_object().id,category=category)
+        new_pitch_object.save_pitch()
         return redirect(url_for('main.index'))
-    return render_template('pitch.html', form=form)
+        
+    return render_template('newpitch.html', form = form)
 
-@main.route('/comment/<int:post_id>', methods=['GET', 'POST'])
-@login_required
-def comment(post_id):
-    form = CommentForm()
-    post = Post.query.get(post_id)
-    user = User.query.all()
-    comments = Comment.query.filter_by(post_id=post_id).all()
-    if form.validate_on_submit():
-        comment = form.comment.data
-        post_id = post_id
-        user_id = current_user._get_current_object().id
-        new_comment = Comment(
-            comment=comment,
-            post_id=post_id,
-            user_id=user_id
-        )
-        new_comment.save()
-        new_comments = [new_comment]
-        print(new_comments)
-        return redirect(url_for('.comment', post_id=post_id))
-    return render_template('comment.html', form=form, post=post, comments=comments, user=user)
+# The profile where users will view their previous pitches
+@main.route('/user/<uname>')
+def profile(uname):
+    user = User.query.filter_by(username = uname).first()
 
-@main.route('/user')
-@login_required
-def user():
-    username = current_user.username
-    user = User.query.filter_by(username=username).first()
     if user is None:
-        return ('not found')
-    return render_template('profile.html', user=user)
+        abort(404) #stops a requests
 
-@main.route('/user/<name>/update_profile', methods=['POST', 'GET'])
+    return render_template("userProfile/profile.html", user = user)
+
+
+#Update user profile
+@main.route('/user/<uname>/update',methods = ['GET','POST'])
 @login_required
-def updateprofile(name):
+def update_profile(uname):
+    user = User.query.filter_by(username = uname).first()
+    if user is None:
+        abort(404)
+
     form = UpdateProfile()
-    user = User.query.filter_by(username=name).first()
-    if user is None:
-        error = 'The user does not exist'
+
     if form.validate_on_submit():
         user.bio = form.bio.data
-        user.save()
-        return redirect(url_for('.profile', name=name))
-    return render_template('profile/update_profile.html', form=form)
 
-@main.route('/like/<int:id>', methods=['POST', 'GET'])
+        db.session.add(user)
+        db.session.commit()
+
+        return redirect(url_for('.profile',uname=user.username))
+
+    return render_template('userProfile/update.html',form =form)
+
+
+#User comments
+@main.route('/comment/<int:pitch_id>', methods = ['POST','GET'])
+@login_required
+def comment(pitch_id):
+    form = CommentForm()
+    pitch = Pitch.query.get(pitch_id)
+    usercomments = Comment.query.filter_by(pitch_id = pitch_id).all()
+    if form.validate_on_submit():
+        comment_content = form.comment_content.data 
+        pitch_id = pitch_id
+        user_id = current_user._get_current_object().id
+        new_comment = Comment(comment_Message = comment_content, user_id = user_id,pitch_id = pitch_id)
+        new_comment.save_comments()
+        
+        return redirect(url_for('.comment',pitch_id= pitch.id))
+    # return redirect(url_for('.movie',id = movie.id ))
+    return render_template('comments.html', form =form, pitch = pitch,usercomments=usercomments)
+
+#user upvote
+@main.route('/upvote/<int:id>', methods=['POST', 'GET'])
 @login_required
 def upvote(id):
-    post = Post.query.get(id)
-    vote_mpya = Upvote(post=post, upvote=1)
-    vote_mpya.save()
-    return redirect(url_for('main.posts'))
-
-@main.route('/dislike/<int:id>', methods=['GET', 'POST'])
+    pass
+   
+@main.route('/downvote/<int:id>', methods=['POST', 'GET'])
 @login_required
 def downvote(id):
-    post = Post.query.get(id)
-    vm = Downvote(post=post, downvote=1)
-    vm.save()
-    return redirect(url_for('main.posts'))
-
-# @main.rote('/login', methods=['GET','POST'])
-# def login():
-#     login_form = LoginForm()
-#     if login_form.validate_on_submit():
-#         user = User.query.filter_by(email = login_form.email.data).first()
-#         if user is not None and user.verify_email(login_form.email.data):
-#             login_user(user,login_form.remember.data)
-#             return redirect(request.args.get('next') or url_for('main.index'))
-#         flash('Invalid username or password')
-
-#     title = "Impress through Pitches"
-#     return render('main/login.html',login_form = login_form,title = title)
-
-# @main.route('/logout')
-# @login_required
-# def logout():
-#     logout_user()
-#     return redirect(url_for("main.index"))
-
-# @main.route('/register',methods=["GET","POST"])
-# def register():
-#     form = RegistrationForm()
-#     if form.validate_on_submit():
-#         user = User(email = form.email.data, username = form.username.data)
-#         db.session.add(user)
-#         db.session.commit()
-#         return redirect(url_for('main.login'))
-#         title = "New Account"
-#     return render('main/register.html',registration_form = form)
+    pass

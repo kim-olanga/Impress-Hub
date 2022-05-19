@@ -1,3 +1,4 @@
+export SECRET_KEY='iamhonestlyexhautedlikedamn'
 export MAIL_USERNAME='kweriasjk.gafeghj@gmail.com'
 export MAIL_PASSWORD='gugagaga'
 

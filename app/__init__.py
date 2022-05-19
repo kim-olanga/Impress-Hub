@@ -1,30 +1,50 @@
 from flask import Flask
-from flask_login import LoginManager
+from config import config_options
+# making use of SQL ALchemy
 from flask_sqlalchemy import SQLAlchemy
 from flask_bootstrap import Bootstrap
+# for image uploads
+# from flask_uploads import UploadSet,configure_uploads,IMAGES
 from flask_mail import Mail
-from config import config_options
-# from flask_migrate import Migrate
-# from .main import main_blueprint 
 
-app = Flask(__name__)
 
-db = SQLAlchemy()
+#Handling user login
+from flask_login import LoginManager
+
 login_manager = LoginManager()
-bootstrap = Bootstrap()
-mail = Mail(app)
-# migrate = Migrate()
+login_manager.session_protection = 'strong' #Enhances security levels by monitoring the changes in a user's request header and log the user out.
 login_manager.login_view = 'auth.login'
-login_manager.session_protection = 'strong'
+#User login ends here
+
+db = SQLAlchemy() # an instance
+mail= Mail()
+
+#User profile photo updates
+# photos = UploadSet('photos',IMAGES)
 
 def create_app(config_name):
+    
+    app = Flask(__name__)
+    mail.init_app(app)
+    
+    # Creating the app configurations
     app.config.from_object(config_options[config_name])
-    from .auth import auth as auth_blueprint
+    
+     # Registering the blueprint
     from .main import main as main_blueprint
-    app.register_blueprint(auth_blueprint)
     app.register_blueprint(main_blueprint)
-    return app
+    
+    #Registering the authentication blueprint
+    from .auth import auth as auth_blueprint
+    app.register_blueprint(auth_blueprint,url_prefix = '/user-authentication')
+    
+    # configure UploadSet
+    # configure_uploads(app,photos)
+    
+    #Initializing the extensions from flask
+    db.init_app(app)
+    login_manager.init_app(app)
+    bootstrap = Bootstrap(app)
+   
 
-# if __name__ == '__main__':
-    # load_dotenv(find_dotenv())
-    # create_app()
+    return app
