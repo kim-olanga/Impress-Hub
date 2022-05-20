@@ -1,24 +1,20 @@
-from typing_extensions import Required
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, TextAreaField ,SubmitField
-from wtforms.validators import Required
+from wtforms import StringField,TextAreaField,SelectField, SubmitField
+from wtforms.validators import DataRequired
 
-class RegistrationForm(FlaskForm):
-    title = StringField('Title', validators=[Required()])
-    post = TextAreaField('Pitch', validators=[Required()])
-    category = SelectField('Category', choices=[('PRODUCT', 'PRODUCT'), ('IDEA', 'IDEA'), ('Business', 'Business')],
-                           validators=[Required()])
-    submit = SubmitField('Post')
+#User update profile
+class UpdateProfile(FlaskForm):
+    bio = TextAreaField('Briefly describe yourself.',validators = [DataRequired()])
+    submit = SubmitField('Submit')
+
+
+class PitchesForm(FlaskForm):
+    name = StringField('Author Name ', validators=[DataRequired()])
+    content = TextAreaField('Enter Your one minute pitch', validators=[DataRequired()])
+    
+    category = SelectField('Category', choices=[('Health Quote','Health Quote'),('Pick-up' ,'Pick Up Lines'),('Personal Growth','Personal Growth'),('Mum Jokes','Mum Jokes'),('Business','Business')], validators=[DataRequired()])
+    submit = SubmitField('Pitch with Impress')
 
 class CommentForm(FlaskForm):
-    comment = TextAreaField('Comment', validators=[Required()])
-    submit = SubmitField('Post')
-
-
-class Vote(FlaskForm):
-    submit = SelectField('Like')
-
-
-class UpdateProfile(FlaskForm):
-    bio = TextAreaField('bio', validators=[Required()])
-    submit = SubmitField('Post')
+    comment_content = TextAreaField('Provide feedback/Comments', validators=[DataRequired()])
+    submit = SubmitField('Add Comment')

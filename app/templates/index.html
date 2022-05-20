@@ -1,22 +1,96 @@
-{% extends 'base.html'%}
-{% from 'pitch_display_macro.html' import display_pitches%}
+{% extends 'base.html' %}
 {% block content%}
-{% block styles %}
-{{super()}}
-<link rel="stylesheet" href="{{url_for('static',filename='css/particle.css')}}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-{% endblock %}
-<div class="bgimage">
-    <div class="p-3 p-md-5 m-md-3 text-center bg-transparent">
-        <div class="col-md-12 p-lg-5 mx-auto my-5">
-            <h1 class="display-4 font-weight-normal text-white"style="font-size:40px"> IMPRESS BY PITCHING YOUR PITCH </h1>
-            <p class="lead font-weight-normal text-white"style="font-size:40px">Make it happen in a minute.</p>
-            <p style="font-size:40px;color:white">You only have 60 seconds to impress someone. 1 minute can make or break you. How do you make sure that you use your 1 minute to actually say something meaningful or impactful?</p>
-            <div id="buttons d-block mx-auto">
-                <a class="btn btn-outline-secondary text-white" href="/new_post"style="font-size:40px">New Pitch</a>
-                <a class="btn btn-outline-secondary text-white" href="/posts"style="font-size:40px">View Pitches</a>
+<div class="container-fluid" id="home">
+
+    <div class="col-md-12 text-center">
+
+        <h3 id="introduction">In life, you only have 60 seconds to impress someone. 1 minute can make or break you. How
+            do we make sure that you use your 1 minute to actually say something meaningful? </h3>
+
+        <a href=""><button type="button" class="btn shadow-lg" id="start"> Start Here </button></a>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-4" id="product">
+            <div class="card shadow p-3 mb-5 bg-body rounded">
+                <div class="card-body">
+                    <h4 class="card-title">Health Quotes </h4>
+                    <p class="card-text text-center">"If your body is not right, the rest of your body will go all wrong. Take good crazy care of yourself."</p>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-sm-4" id="lines">
+            <div class="card shadow p-3 mb-5 bg-body rounded">
+                <div class="card-body">
+                    <h4 class="card-title">PickUp Lines</h4>
+                    <p class="card-text text-center">"I ouught to complain to spotify for you not being names this week's hottest single. LOOL!"</p>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-sm-4" id="product">
+            <div class="card shadow p-3 mb-5 bg-body rounded">
+                <div class="card-body">
+                    <h4 class="card-title">Personal Growth Quotes </h4>
+                    <p class="card-text text-center">"Be soo committed to your growth that it encourages you to grow as well"<br> "Be soo committed to your growth that it scares away the ones that are tempted to drop you down to their level."</p>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-sm-4" id="Interview">
+            <div class="card shadow p-3 mb-5 bg-body rounded">
+                <div class="card-body">
+                    <h4 class="card-title">Mum Jokes </h4>
+                    <p class="card-text text-center">"I askes a police recruit during an exam what he would do if he had to arrest him mother and he said call for backup.... OMG!"</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-4" id="product">
+            <div class="card shadow p-3 mb-5 bg-body rounded">
+                <div class="card-body">
+                    <h4 class="card-title">Business Quote </h4>
+                    <p class="card-text text-center">"Build a business that scares the hell out of you and makes you uncomfortable even when things run smoothly.. In short build an empire!"</p>
+                </div>
             </div>
         </div>
     </div>
+
+    <h3 class="text-center border-bottom"> Created PITCHES</h3>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+
+        {% for pitch in all_pitches%}
+        <div class="col" id="pitches">
+            <div class="card shadow p-3 mb-5 bg-body rounded">
+                <div class="card-body">
+                    <h4 class="card-title">{{pitch.category}} {{pitch.id}}</h4>
+                    <p class="card-text text-center">"{{pitch.pitchcontent}}"</p>
+                    <a href="/comment/{{pitch.id}}">
+                        <button type="button" class="btn btn-outline-info">Make a comment</button></a>
+                    <br>
+                    <!-- <div class="votes mt-3">
+                        <a href="#"><span>Thumb Up <i class="fa-solid fa-thumbs-up"></i></span></a>
+                        <a href="#"><span><i class="fa-solid fa-thumbs-down ms-5">  </i>Thumb Down</span></a>
+                    </div> -->
+                    <div class="card-footer">
+                        <h5> <span>
+                                {{pitch.name}}
+                            </span></h5>
+                        <h5>Date Added: {{pitch.Additiontime.strftime('%Y-%m-%d')}}</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {%endfor%}
+    </div>
+
+
+
+
+    {% endblock%}
+
 </div>
-{% endblock %}
