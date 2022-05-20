@@ -12,7 +12,7 @@ class PitchesForm(FlaskForm):
     name = StringField('Author Name ', validators=[DataRequired()])
     content = TextAreaField('Enter Your one minute pitch', validators=[DataRequired()])
     
-    category = SelectField('Category', choices=[('Product-Pitch','Product Pitch'),('Pick-up' ,'Pick Up Lines'),('Sales-Pitch','Sales Pitch'),('Interview-Pitch','Interview Pitch'),('Promotion-Pitch','Promotion Pitch'),('Business-Pitch','Business Pitch')], validators=[DataRequired()])
+    category = SelectField('Category', choices=[('Health Quote','Health Quote'),('Pick-up' ,'Pick Up Lines'),('Personal Growth','Personal Growth'),('Mum Jokes','Mum Jokes'),('Business','Business')], validators=[DataRequired()])
     submit = SubmitField('Pitch with Impress')
 
 class CommentForm(FlaskForm):

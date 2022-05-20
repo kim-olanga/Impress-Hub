@@ -5,7 +5,7 @@ class Config:
     
     '''
     SECRET_KEY = os.environ.get('SECRET_KEY')
-    SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://kimberly:kim12345@localhost/pitche'
+    SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://kimberly:kim12345@localhost/pitchee'
     # the destination for our uploaded images will be static folder
     UPLOADED_PHOTOS_DEST ='app/static/photos'
     

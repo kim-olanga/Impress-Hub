@@ -14,16 +14,15 @@ from flask_login import login_required,current_user
 def index():
     
     all_pitches = Pitch.query.all()
-    interviews = Pitch.query.filter_by(category="Interview-Pitch").order_by(Pitch.Additiontime.desc()).all()
-    products = Pitch.query.filter_by(category="Product-Pitch").order_by(Pitch.Additiontime.desc()).all()
-    promotions = Pitch.query.filter_by(category="Promotion-Pitch").order_by(Pitch.Additiontime.desc()).all()
-    business = Pitch.query.filter_by(category="Business-Pitch").order_by(Pitch.Additiontime.desc()).all()
-    pickUp = Pitch.query.filter_by(category="'Pick-up").order_by(Pitch.Additiontime.desc()).all()
-    sales = Pitch.query.filter_by(category="'Pick-up").order_by(Pitch.Additiontime.desc()).all()
+    healthQuote = Pitch.query.filter_by(category="Health-Quote").order_by(Pitch.Additiontime.desc()).all()
+    pickUpLines = Pitch.query.filter_by(category="Pick-Up-Lines").order_by(Pitch.Additiontime.desc()).all()
+    personalGrowth = Pitch.query.filter_by(category="Personal-Growth").order_by(Pitch.Additiontime.desc()).all()
+    mumJokes = Pitch.query.filter_by(category="Mum-Jokes").order_by(Pitch.Additiontime.desc()).all()
+    business = Pitch.query.filter_by(category="Business").order_by(Pitch.Additiontime.desc()).all()
       
     title = "pitch & pitch"
     
-    return render_template('index.html', title=title, all_pitches = all_pitches, interviews=interviews, products=products, promotions=promotions, business=business, pickUp = pickUp, sales=sales)
+    return render_template('index.html', title=title, all_pitches = all_pitches, healthQuote=healthQuote, pickUpLines=pickUpLines, personalGrowth=personalGrowth, mumJokes=mumJokes, business=business)
 
 
 @main.route('/create_new', methods =['POST','GET'])
@@ -49,7 +48,7 @@ def profile(uname):
     if user is None:
         abort(404) #stops a requests
 
-    return render_template("userProfile/profile.html", user = user)
+    return render_template("profile/profile.html", user = user)
 
 
 #Update user profile
@@ -70,7 +69,7 @@ def update_profile(uname):
 
         return redirect(url_for('.profile',uname=user.username))
 
-    return render_template('userProfile/update.html',form =form)
+    return render_template('profile/update.html',form =form)
 
 
 #User comments
@@ -89,7 +88,7 @@ def comment(pitch_id):
         
         return redirect(url_for('.comment',pitch_id= pitch.id))
     # return redirect(url_for('.movie',id = movie.id ))
-    return render_template('comments.html', form =form, pitch = pitch,usercomments=usercomments)
+    return render_template('comment.html', form =form, pitch = pitch,usercomments=usercomments)
 
 #user upvote
 @main.route('/upvote/<int:id>', methods=['POST', 'GET'])
